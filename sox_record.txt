@@ -1,0 +1,1 @@
+sudo sox -c 2 -r 44100 -b 16 -L -d -t wav D/gogo.wav trim 0 1200 : newfile : restart
