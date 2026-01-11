@@ -1,1 +1,2 @@
 sudo sox -c 2 -r 44100 -b 16 -L -d -t wav D/gogo.wav trim 0 1200 : newfile : restart
+sudo sox -c 2 -r 48000 -b 32 -L -d -t wav -c 2 -b 24 -r 48000 -L Pretenders_II_a.wav
