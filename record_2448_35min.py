@@ -35,8 +35,17 @@ def main():
     # Start sox in its own process group so we can terminate it cleanly.
     proc = subprocess.Popen(cmd, preexec_fn=os.setsid)
 
+    interrupted = False
     try:
-        time.sleep(DURATION_SECONDS)
+        start_time = time.time()
+        while True:
+            elapsed = time.time() - start_time
+            remaining = DURATION_SECONDS - elapsed
+            if remaining <= 0:
+                break
+            time.sleep(min(1.0, remaining))
+    except KeyboardInterrupt:
+        interrupted = True
     finally:
         # Terminate whole process group (covers child processes too)
         try:
@@ -50,6 +59,9 @@ def main():
         except subprocess.TimeoutExpired:
             os.killpg(proc.pid, signal.SIGKILL)
             proc.wait()
+
+    if interrupted:
+        raise SystemExit(130)
 
 
 if __name__ == "__main__":
