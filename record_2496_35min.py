@@ -19,17 +19,6 @@ def main():
     # Your command (kept essentially the same, but with output filename inserted)
     cmd = [
         "sox",
-        output_wav,
-        "-p  trim 150",
-        "|", 
-        "sox -p -n stats"
-    ]
-
-    # Start sox in its own process group so we can terminate it cleanly.
-    proc = subprocess.Popen(cmd, preexec_fn=os.setsid)
-
-    cmd = [
-        "sox",
         "-c", "2",
         "-r", "96000",
         "-b", "32",
@@ -42,6 +31,11 @@ def main():
         "-L",
         output_wav,
     ]
+
+    print(*cmd) 
+
+    # Start sox in its own process group so we can terminate it cleanly.
+    proc = subprocess.Popen(cmd, preexec_fn=os.setsid)
 
     try:
         time.sleep(DURATION_SECONDS)
@@ -58,6 +52,18 @@ def main():
         except subprocess.TimeoutExpired:
             os.killpg(proc.pid, signal.SIGKILL)
             proc.wait()
+
+
+    cmd = [
+        "sox",
+        output_wav,
+        "-p  trim 150",
+        "|", 
+        "sox -p -n stats"
+    ]
+
+    print(*cmd)
+    proc = subprocess.Popen(cmd, preexec_fn=os.setsid)
 
 
 if __name__ == "__main__":

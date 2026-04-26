@@ -32,20 +32,13 @@ def main():
         output_wav,
     ]
 
+    print(*cmd) 
+
     # Start sox in its own process group so we can terminate it cleanly.
     proc = subprocess.Popen(cmd, preexec_fn=os.setsid)
 
-    interrupted = False
     try:
-        start_time = time.time()
-        while True:
-            elapsed = time.time() - start_time
-            remaining = DURATION_SECONDS - elapsed
-            if remaining <= 0:
-                break
-            time.sleep(min(1.0, remaining))
-    except KeyboardInterrupt:
-        interrupted = True
+        time.sleep(DURATION_SECONDS)
     finally:
         # Terminate whole process group (covers child processes too)
         try:
@@ -60,8 +53,17 @@ def main():
             os.killpg(proc.pid, signal.SIGKILL)
             proc.wait()
 
-    if interrupted:
-        raise SystemExit(130)
+
+    cmd = [
+        "sox",
+        output_wav,
+        "-p  trim 150",
+        "|", 
+        "sox -p -n stats"
+    ]
+
+    print(*cmd)
+    proc = subprocess.Popen(cmd, preexec_fn=os.setsid)
 
 
 if __name__ == "__main__":
