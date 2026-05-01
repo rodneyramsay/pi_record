@@ -55,8 +55,14 @@ def main():
 
 
     cmd = [
-        "sox", output_wav, "-p", "trim", "150", "|", 
-        "sox", "-p", "-n", "stats"
+        "sox", output_wav, 
+        "-p", 
+        "trim", "150", 
+        "|", 
+        "sox", 
+        "-p", 
+        "-n", 
+        "stats"
     ]
 
     print(*cmd)
