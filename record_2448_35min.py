@@ -63,7 +63,7 @@ def main():
     ]
 
     print(*cmd)
-    proc = subprocess.Popen(cmd, preexec_fn=os.setsid)
+    os.system(cmd)
 
 
 if __name__ == "__main__":
