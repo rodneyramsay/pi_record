@@ -39,31 +39,23 @@ def main():
 
     try:
         time.sleep(DURATION_SECONDS)
+    except KeyboardInterrupt:
+        print()
+        print("Recording interrupted; stopping sox and running stats...")
     finally:
-        # Terminate whole process group (covers child processes too)
-        try:
+        if proc.poll() is None:
             os.killpg(proc.pid, signal.SIGTERM)
-        except ProcessLookupError:
-            return
-
-        # Give it a moment to exit cleanly
-        try:
-            proc.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            os.killpg(proc.pid, signal.SIGKILL)
-            proc.wait()
+            try:
+                proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                os.killpg(proc.pid, signal.SIGKILL)
+                proc.wait()
 
 
-    cmd = [
-        "sox",
-        output_wav,
-        "-p  trim 150",
-        "|", 
-        "sox -p -n stats"
-    ]
+    cmd = f'sox "{output_wav}" -p trim 150 | sox -p -n stats'
 
-    print(*cmd)
-    os.system(cmd)
+    print(cmd)
+    subprocess.run(cmd, shell=True)
 
 
 if __name__ == "__main__":
